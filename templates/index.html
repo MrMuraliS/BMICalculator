@@ -12,9 +12,9 @@
       <div class="col-md-6">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h3 class="mb-3">BMI Calculator</h3>
+            <h3 class="mb-3 text-center">BMI Calculator</h3>
 
-            <form method="POST" action="/calculate">
+            <form method="POST" action="/calculate" id="bmiForm">
               <div class="mb-3">
                 <label class="form-label">Weight (kg)</label>
                 <input type="number" step="any" name="weight" class="form-control" required />
@@ -25,18 +25,54 @@
                 <input type="number" step="any" name="height" class="form-control" required />
               </div>
 
-              <button class="btn btn-primary" type="submit">Calculate BMI</button>
+              <button class="btn btn-primary w-100" type="submit">Calculate BMI</button>
             </form>
 
-            {% if result %}
-            <hr>
-            <h5>Your BMI: {{ result.bmi }}</h5>
-            <p>Category: {{ result.category }}</p>
-            {% endif %}
+            <!-- Output Section -->
+            <div id="bmiResult" class="alert alert-info mt-4 text-center d-none">
+              Your BMI will appear here.
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+  document.getElementById('bmiForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const weight = parseFloat(event.target.weight.value);
+    const height = parseFloat(event.target.height.value) / 100; // Convert cm to meters
+
+    if (weight > 0 && height > 0) {
+      const bmi = (weight / (height * height)).toFixed(2);
+      const resultDiv = document.getElementById('bmiResult');
+
+      // Determine BMI category and set color
+      let category = '';
+      let colorClass = '';
+
+      if (bmi < 18.5) {
+        category = 'Underweight';
+        colorClass = 'alert-warning'; // Yellow
+      } else if (bmi >= 18.5 && bmi < 24.9) {
+        category = 'Normal weight';
+        colorClass = 'alert-success'; // Green
+      } else if (bmi >= 25 && bmi < 29.9) {
+        category = 'Overweight';
+        colorClass = 'alert-primary'; // Blue
+      } else {
+        category = 'Obesity';
+        colorClass = 'alert-danger'; // Red
+      }
+
+      // Update result text and color
+      resultDiv.textContent = `Your BMI is ${bmi} (${category})`;
+      resultDiv.className = `alert mt-4 text-center ${colorClass}`; // Reset and apply new class
+      resultDiv.classList.remove('d-none');
+    }
+  });
+</script>
 </body>
 </html>
